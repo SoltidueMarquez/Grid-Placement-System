@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlacementSystem : MonoBehaviour
+/*public class PlacementSystem : MonoBehaviour
 {
     [SerializeField]
     private InputManager inputManager;
@@ -117,4 +117,4 @@ public class PlacementSystem : MonoBehaviour
         }
         
     }
-}
+}*/

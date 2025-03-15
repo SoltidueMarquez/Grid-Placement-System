@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Unity.VisualScripting.Member;
 
-public class PlacementState : IBuildingState
+/*public class PlacementState : IBuildingState
 {
     private int selectedObjectIndex = -1;
     int ID;
@@ -89,5 +89,5 @@ public class PlacementState : IBuildingState
 
         previewSystem.UpdatePosition(grid.CellToWorld(gridPosition), placementValidity);
     }
-}
+}*/
 

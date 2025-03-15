@@ -17,7 +17,7 @@ namespace GridPlacement
         [SerializeField, Tooltip("放置按键"), Range(0, 1)] private int placeKey = 0;
         [SerializeField, Tooltip("取消按键")] private KeyCode cancelKey = KeyCode.Escape;
 
-        public event Action OnClicked, OnExit;
+        public event Action OnClicked, OnExit;  // 点击和取消事件
 
         private void Update()
         {
@@ -27,7 +27,7 @@ namespace GridPlacement
                 OnExit?.Invoke();
         }
 
-        public bool IsPointerOverUI() 
+        public bool IsPointerOverUI() // 检测鼠标或触摸是否悬停在 UI 界面上。
             => EventSystem.current.IsPointerOverGameObject();
         
         public Vector3 GetSelectedMapPosition()
