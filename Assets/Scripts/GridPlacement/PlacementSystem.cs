@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GridPlacement
@@ -6,6 +7,8 @@ namespace GridPlacement
     public class PlacementSystem : MonoBehaviour
     {
         [SerializeField, Tooltip("鼠标指示器")] private GameObject mouseIndicator;
+        private Renderer previewRender;
+        
         [SerializeField, Tooltip("单元格指示器")] private GameObject cellIndicator;
         [SerializeField, Tooltip("网格")] private Grid grid;
 
@@ -15,12 +18,18 @@ namespace GridPlacement
         [SerializeField, Tooltip("可视网格")] private GameObject gridVisualization; 
         
         private InputManager inputManager;
+        
+        private GridData floorData, furnitureData;// 地板类物体放置信息、家具类物体放置信息
+
+        private List<GameObject> palcedGameObjects = new List<GameObject>();
 
         private void Start()
         {
             inputManager = InputManager.Instance;
-
             StopPlacement();
+            floorData = new GridData();
+            furnitureData = new GridData();
+            previewRender = cellIndicator.GetComponentInChildren<Renderer>();
         }
 
         public void StartPlacement(int id)
@@ -45,9 +54,34 @@ namespace GridPlacement
             // 获取位置
             var mousePosition = inputManager.GetSelectedMapPosition();
             var gridPosition = grid.WorldToCell(mousePosition);
+            // 合法性判断
+            var placementValidity = CheckPlacementValidity(gridPosition, selectedObjectIndex);
+            if (!placementValidity)
+            {
+                //TODO:播放警告音频
+                return;
+            }
+            
+            //TODO:播放放置音频
+            
             // 放置
             var structure = Instantiate(database.objectsData[selectedObjectIndex].prefab);
             structure.transform.position = gridPosition;
+            palcedGameObjects.Add(structure);
+            //更新对应的gridData
+            var selectedData = database.objectsData[selectedObjectIndex].id == 0 ? floorData : furnitureData;
+            selectedData.AddObjectAt(gridPosition,
+                database.objectsData[selectedObjectIndex].size,
+                database.objectsData[selectedObjectIndex].id,
+                palcedGameObjects.Count - 1);
+        }
+
+        private bool CheckPlacementValidity(Vector3Int gridPosition, int selectedObjectIndex)
+        {
+            // 判断是地板物体还是家具物体
+            var selectedData = database.objectsData[selectedObjectIndex].id == 0 ? floorData : furnitureData;
+            //判断合法性
+            return selectedData.CanPlaceObjectAt(gridPosition, database.objectsData[selectedObjectIndex].size);
         }
 
         private void StopPlacement()
@@ -65,6 +99,11 @@ namespace GridPlacement
             
             var mousePosition = inputManager.GetSelectedMapPosition();// 获取鼠标位置
             var gridPosition = grid.WorldToCell(mousePosition);// 计算单元格指示器的位置
+            
+            // 位置如果不合法就更改表现
+            var placementValidity = CheckPlacementValidity(gridPosition, selectedObjectIndex);
+            previewRender.material.color = placementValidity ? Color.white : Color.red;
+            
             mouseIndicator.transform.position = mousePosition;
             cellIndicator.transform.position = gridPosition;
         }
