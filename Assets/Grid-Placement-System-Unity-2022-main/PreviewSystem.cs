@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-public class PreviewSystem : MonoBehaviour
+/*public class PreviewSystem : MonoBehaviour
 {
     [SerializeField]
     private float previewYOffset = 0.06f;
@@ -109,4 +109,4 @@ public class PreviewSystem : MonoBehaviour
         PrepareCursor(Vector2Int.one);
         ApplyFeedbackToCursor(false);
     }
-}
+}*/

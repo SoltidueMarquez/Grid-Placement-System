@@ -7,29 +7,31 @@ namespace GridPlacement
     public class PlacementSystem : MonoBehaviour
     {
         [SerializeField, Tooltip("鼠标指示器")] private GameObject mouseIndicator;
-        private Renderer previewRender;
-        
-        [SerializeField, Tooltip("单元格指示器")] private GameObject cellIndicator;
+
         [SerializeField, Tooltip("网格")] private Grid grid;
 
         [SerializeField, Tooltip("物体数据")] private ObjectsDatabaseSo database;
         private int selectedObjectIndex = -1;// 当前选择的物体序号
 
-        [SerializeField, Tooltip("可视网格")] private GameObject gridVisualization; 
-        
-        private InputManager inputManager;
-        
+        [SerializeField, Tooltip("可视网格")] private GameObject gridVisualization;
+
         private GridData floorData, furnitureData;// 地板类物体放置信息、家具类物体放置信息
 
         private List<GameObject> palcedGameObjects = new List<GameObject>();
+        
+        private Vector3Int lastDetectedPosition = Vector3Int.zero;
+        
+        private InputManager inputManager;
+        private PreviewSystem preview;
+        
 
         private void Start()
         {
             inputManager = InputManager.Instance;
+            preview = PreviewSystem.Instance;
             StopPlacement();
             floorData = new GridData();
             furnitureData = new GridData();
-            previewRender = cellIndicator.GetComponentInChildren<Renderer>();
         }
 
         public void StartPlacement(int id)
@@ -43,7 +45,9 @@ namespace GridPlacement
             }
 
             gridVisualization.SetActive(true);// 显示网格
-            cellIndicator.SetActive(true);// 显示单元格指示器
+            preview.StartShowingPlacementPreview(// 显示预览
+                database.objectsData[selectedObjectIndex].prefab,
+                database.objectsData[selectedObjectIndex].size);
             inputManager.OnClicked += PlaceStructure;// 订阅事件
             inputManager.OnExit += StopPlacement;
         }
@@ -74,6 +78,9 @@ namespace GridPlacement
                 database.objectsData[selectedObjectIndex].size,
                 database.objectsData[selectedObjectIndex].id,
                 palcedGameObjects.Count - 1);
+            
+            // 更新预览表现
+            preview.UpdatePosition(grid.CellToWorld(gridPosition), false);
         }
 
         private bool CheckPlacementValidity(Vector3Int gridPosition, int selectedObjectIndex)
@@ -88,24 +95,25 @@ namespace GridPlacement
         {
             selectedObjectIndex = -1;
             gridVisualization.SetActive(false);// 隐藏网格
-            cellIndicator.SetActive(false);// 隐藏单元格指示器
+            preview.StopShowingPreview();// 隐藏预览
             inputManager.OnClicked -= PlaceStructure;// 取消订阅事件
             inputManager.OnExit -= StopPlacement;
+            lastDetectedPosition = Vector3Int.zero;
         }
 
         private void Update()
         {
-            if (selectedObjectIndex < 0) return;//如果没有物体就直接返回
+            if (selectedObjectIndex < 0) return;// 如果没有物体就直接返回
             
             var mousePosition = inputManager.GetSelectedMapPosition();// 获取鼠标位置
             var gridPosition = grid.WorldToCell(mousePosition);// 计算单元格指示器的位置
-            
-            // 位置如果不合法就更改表现
-            var placementValidity = CheckPlacementValidity(gridPosition, selectedObjectIndex);
-            previewRender.material.color = placementValidity ? Color.white : Color.red;
-            
-            mouseIndicator.transform.position = mousePosition;
-            cellIndicator.transform.position = gridPosition;
+
+            if (lastDetectedPosition != gridPosition)// 更新预览表现
+            {
+                var placementValidity = CheckPlacementValidity(gridPosition, selectedObjectIndex);
+                mouseIndicator.transform.position = mousePosition;
+                preview.UpdatePosition(grid.CellToWorld(gridPosition), placementValidity);
+            }
         }
     }
 }
