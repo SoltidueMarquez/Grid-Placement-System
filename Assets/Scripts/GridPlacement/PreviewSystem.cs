@@ -53,7 +53,7 @@ namespace GridPlacement
         public void StopShowingPreview()
         {
             cellIndicator.SetActive(false); // 隐藏网格指示器
-            if(previewObject!= null) Destroy(previewObject); // 摧毁预览物体
+            if (previewObject != null) Destroy(previewObject); // 摧毁预览物体
         }
 
         public void UpdatePosition(Vector3 position, bool validity) // 位置更新与颜色更改
@@ -91,7 +91,7 @@ namespace GridPlacement
             previewObject.transform.position = new Vector3(position.x, position.y + previewYOffset, position.z);
         }
 
-        internal void StartShowingRemovePreview()
+        internal void StartShowingRemovePreview()// 移除操作的预览
         {
             cellIndicator.SetActive(true);
             PrepareCursor(Vector2Int.one);

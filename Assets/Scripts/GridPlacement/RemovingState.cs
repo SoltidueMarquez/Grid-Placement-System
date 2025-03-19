@@ -28,15 +28,9 @@ namespace GridPlacement
 
         public void OnAction(Vector3Int gridPosition)
         {
-            GridData selectedData = null;
-            if(!furnitureData.CanPlaceObjectAt(gridPosition,Vector2Int.one))
-            {
-                selectedData = furnitureData;
-            }
-            else if(!floorData.CanPlaceObjectAt(gridPosition, Vector2Int.one))
-            {
-                selectedData = floorData;
-            }
+            GridData selectedData = null;// 首先判断要删除的物体是地板物体还是家具物体
+            if(!furnitureData.CanPlaceObjectAt(gridPosition,Vector2Int.one)) { selectedData = furnitureData; }
+            else if(!floorData.CanPlaceObjectAt(gridPosition, Vector2Int.one)) { selectedData = floorData; }
 
             if(selectedData == null)
             {
@@ -45,7 +39,7 @@ namespace GridPlacement
             else
             {
                 //TODO:播放移除音效
-                gameObjectIndex = selectedData.GetRepresentationIndex(gridPosition);
+                gameObjectIndex = selectedData.GetRepresentationIndex(gridPosition);//获取物体的索引
                 if (gameObjectIndex == -1)
                     return;
                 selectedData.RemoveObjectAt(gridPosition);
@@ -57,8 +51,7 @@ namespace GridPlacement
 
         private bool CheckIfSelectionIsValid(Vector3Int gridPosition)
         {
-            return !(furnitureData.CanPlaceObjectAt(gridPosition, Vector2Int.one) &&
-                     floorData.CanPlaceObjectAt(gridPosition, Vector2Int.one));
+            return !(furnitureData.CanPlaceObjectAt(gridPosition, Vector2Int.one) && floorData.CanPlaceObjectAt(gridPosition, Vector2Int.one));
         }
 
         public void UpdateState(Vector3Int gridPosition)
