@@ -5,7 +5,6 @@ namespace GridPlacement
     public class PlacementState : IBuildingState
     {
         private int selectedObjectIndex = -1;
-        private int id;
         private Grid grid;
         private PreviewSystem previewSystem;
         private ObjectsDatabaseSo database;
@@ -13,9 +12,19 @@ namespace GridPlacement
         private GridData furnitureData;
         private ObjectPlacer objectPlacer;
 
-        public PlacementState(int id, Grid grid,  PreviewSystem previewSystem,  ObjectsDatabaseSo database, GridData floorData, GridData furnitureData, ObjectPlacer objectPlacer)
+        /// <summary>
+        /// 放置状态
+        /// </summary>
+        /// <param name="placeGameObjectIndex">物品的序列索引</param>
+        /// <param name="grid"></param>
+        /// <param name="previewSystem"></param>
+        /// <param name="database"></param>
+        /// <param name="floorData"></param>
+        /// <param name="furnitureData"></param>
+        /// <param name="objectPlacer"></param>
+        /// <exception cref="Exception"></exception>
+        public PlacementState(int placeGameObjectIndex, Grid grid,  PreviewSystem previewSystem,  ObjectsDatabaseSo database, GridData floorData, GridData furnitureData, ObjectPlacer objectPlacer)
         {
-            this.id = id;
             this.grid = grid;
             this.previewSystem = previewSystem;
             this.database = database;
@@ -23,14 +32,14 @@ namespace GridPlacement
             this.furnitureData = furnitureData;
             this.objectPlacer = objectPlacer;
             // 开始预览放置
-            selectedObjectIndex = database.objectsData.FindIndex(data => data.id == id);
+            selectedObjectIndex = database.objectsData.FindIndex(data => data.id == placeGameObjectIndex);
             if (selectedObjectIndex > -1)
             {
                 previewSystem.StartShowingPlacementPreview(
                     database.objectsData[selectedObjectIndex].prefab,
                     database.objectsData[selectedObjectIndex].size);
             }
-            else throw new System.Exception($"No object with ID {id}");
+            else throw new System.Exception($"No object with ID {placeGameObjectIndex}");
         }
 
         // 结束状态

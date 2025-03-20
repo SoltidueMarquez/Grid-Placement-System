@@ -39,7 +39,7 @@ namespace GridPlacement
             else
             {
                 //TODO:播放移除音效
-                gameObjectIndex = selectedData.GetRepresentationIndex(gridPosition);//获取物体的索引
+                gameObjectIndex = selectedData.GetRepresentationIndex(gridPosition); // 获取操作列表中物体的索引
                 if (gameObjectIndex == -1)
                     return;
                 selectedData.RemoveObjectAt(gridPosition);

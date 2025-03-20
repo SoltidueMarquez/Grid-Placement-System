@@ -8,18 +8,18 @@ namespace GridPlacement
     public class GridData
     {
         Dictionary<Vector3Int, PlacementData> placedObjects = new Dictionary<Vector3Int, PlacementData>();
-        
+
         /// <summary>
         /// 在对应位置上添加物体
         /// </summary>
         /// <param name="gridPosition">网格位置</param>
         /// <param name="objectSize">物体占用大小</param>
-        /// <param name="id"></param>
+        /// <param name="placeOperationID"></param>
         /// <param name="placedObjectIndex">物体id</param>
-        public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int id, int placedObjectIndex)
+        public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int placedObjectIndex, int placeOperationID)
         {
             var positionToOccupy = CalculatePositions(gridPosition, objectSize);  //计算占用位置
-            var data = new PlacementData(positionToOccupy, id, placedObjectIndex);              //构造放置数据
+            var data = new PlacementData(positionToOccupy, placeOperationID, placedObjectIndex); //构造放置数据
             foreach (var pos in positionToOccupy.Where(pos => placedObjects.ContainsKey(pos)))//冲突判断
             {
                 throw new Exception($"Dictionary already contains this cell position {pos}");
@@ -48,15 +48,15 @@ namespace GridPlacement
             return positionToOccupy.All(pos => !placedObjects.ContainsKey(pos));
         }
         
-        // 获取当前物体的占用位置
+        // 获取当前操作在操作列表中的序列索引
         internal int GetRepresentationIndex(Vector3Int gridPosition)
         {
             if (!placedObjects.ContainsKey(gridPosition))
                 return -1;
-            return placedObjects[gridPosition].placedObjectIndex;
+            return placedObjects[gridPosition].operationID;
         }
 
-        // 移除当前物体
+        // 从字典中移除当前物体
         internal void RemoveObjectAt(Vector3Int gridPosition)
         {
             foreach (var pos in placedObjects[gridPosition].occupiedPositions)
@@ -68,14 +68,14 @@ namespace GridPlacement
 
     public class PlacementData
     {
-        public List<Vector3Int> occupiedPositions;  //此物体占用的位置
-        public int id { get; private set; }         //用于保存和加载
+        public List<Vector3Int> occupiedPositions;  // 此物体占用的位置
+        public int operationID { get; private set; }         // 用于移除操作
         public int placedObjectIndex { get; private set; }
         
-        public PlacementData(List<Vector3Int> occupiedPositions, int id, int placedObjectIndex)
+        public PlacementData(List<Vector3Int> occupiedPositions, int operationID, int placedObjectIndex)
         {
             this.occupiedPositions = occupiedPositions;
-            this.id = id;
+            this.operationID = operationID;
             this.placedObjectIndex = placedObjectIndex;
         }
     }
