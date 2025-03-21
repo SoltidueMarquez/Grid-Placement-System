@@ -16,8 +16,11 @@ namespace GridPlacement
 
         [SerializeField, Tooltip("放置按键"), Range(0, 1)] private int placeKey = 0;
         [SerializeField, Tooltip("取消按键")] private KeyCode cancelKey = KeyCode.Escape;
+        
+        [SerializeField, Tooltip("左转按键")] private KeyCode rotateLeftKey = KeyCode.Q;
+        [SerializeField, Tooltip("右转按键")] private KeyCode rotateRightKey = KeyCode.E;
 
-        public event Action OnClicked, OnExit;  // 点击和取消事件
+        public event Action OnClicked, OnExit, OnRotateLeft, OnRotateRight;  // 输入事件
 
         private void Update()
         {
@@ -25,6 +28,10 @@ namespace GridPlacement
                 OnClicked?.Invoke();
             if(Input.GetKeyDown(cancelKey))
                 OnExit?.Invoke();
+            if(Input.GetKeyDown(rotateLeftKey))
+                OnRotateLeft?.Invoke();
+            if(Input.GetKeyDown(rotateRightKey))
+                OnRotateRight?.Invoke();
         }
 
         public bool IsPointerOverUI() // 检测鼠标或触摸是否悬停在 UI 界面上。

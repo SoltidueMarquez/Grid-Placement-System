@@ -27,6 +27,7 @@ namespace GridPlacement
             PreparePreview(previewObject);
             PrepareCursor(size);
             cellIndicator.SetActive(true);
+            cellIndicator.transform.rotation = Quaternion.identity;
         }
 
         private void PrepareCursor(Vector2Int size) // 更改网格指示器的范围
@@ -67,6 +68,27 @@ namespace GridPlacement
             ApplyFeedbackToCursor(validity);
         }
 
+        public void UpdateRotate(int rotateAngle, bool validity) //更新旋转
+        {
+            //更新预览物体的旋转
+            if(previewObject != null)
+            {
+                RotatePreview(rotateAngle);
+                RotateCursor(rotateAngle);
+                ApplyFeedbackToPreview(validity);
+            }
+            ApplyFeedbackToCursor(validity);
+        }
+        
+        private void RotatePreview(int rotateAngle) // 旋转预览物体，旋转角度(只会是90或者-90)
+        {
+            previewObject.transform.rotation *= Quaternion.Euler(0, rotateAngle, 0);
+        }
+        private void RotateCursor(int rotateAngle) // 旋转网格指示器
+        {
+            cellIndicator.transform.rotation *= Quaternion.Euler(0, rotateAngle, 0);
+        }
+        
         private void ApplyFeedbackToPreview(bool validity) // 更改预览物体颜色
         {
             var c = validity ? Color.white : Color.red;
@@ -95,6 +117,7 @@ namespace GridPlacement
         {
             cellIndicator.SetActive(true);
             PrepareCursor(Vector2Int.one);
+            cellIndicator.transform.rotation = Quaternion.identity;
             ApplyFeedbackToCursor(false);
         }
     }

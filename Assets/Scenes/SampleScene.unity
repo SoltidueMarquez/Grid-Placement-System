@@ -663,7 +663,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a2be21dcec24d1043b87763f18e47c39, type: 3}
   m_Name: 
@@ -1129,6 +1129,8 @@ MonoBehaviour:
   maxRayDistance: 100
   placeKey: 0
   cancelKey: 27
+  rotateLeftKey: 113
+  rotateRightKey: 101
 --- !u!1 &698590941
 GameObject:
   m_ObjectHideFlags: 0

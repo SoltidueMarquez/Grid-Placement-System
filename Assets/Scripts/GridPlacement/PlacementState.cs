@@ -11,6 +11,9 @@ namespace GridPlacement
         private GridData floorData;
         private GridData furnitureData;
         private ObjectPlacer objectPlacer;
+        
+        private int currentRotation = 0; // 新增旋转角度跟踪
+        private Vector2Int originalSize = new Vector2Int(); // 存储原始尺寸
 
         /// <summary>
         /// 放置状态
@@ -38,6 +41,7 @@ namespace GridPlacement
                 previewSystem.StartShowingPlacementPreview(
                     database.objectsData[selectedObjectIndex].prefab,
                     database.objectsData[selectedObjectIndex].size);
+                originalSize = database.objectsData[selectedObjectIndex].size;
             }
             else throw new System.Exception($"No object with ID {placeGameObjectIndex}");
         }
@@ -62,11 +66,12 @@ namespace GridPlacement
             //TODO:播放放置音频
             
             // 放置
-            var index = objectPlacer.PlaceObject(database.objectsData[selectedObjectIndex].prefab, gridPosition);
+            var rotation = Quaternion.Euler(0, currentRotation, 0);
+            var index = objectPlacer.PlaceObject(database.objectsData[selectedObjectIndex].prefab, gridPosition, rotation);
             //更新对应的gridData
             var selectedData = database.objectsData[selectedObjectIndex].id == 0 ? floorData : furnitureData;
             selectedData.AddObjectAt(gridPosition,
-                database.objectsData[selectedObjectIndex].size,
+                database.objectsData[selectedObjectIndex].size, currentRotation,
                 database.objectsData[selectedObjectIndex].id,
                 index);
             
@@ -79,10 +84,20 @@ namespace GridPlacement
             // 判断是地板物体还是家具物体
             var selectedData = database.objectsData[selectedObjectIndex].id == 0 ? floorData : furnitureData;
             //判断合法性
-            return selectedData.CanPlaceObjectAt(gridPosition, database.objectsData[selectedObjectIndex].size);
+            return selectedData.CanPlaceObjectAt(gridPosition, database.objectsData[selectedObjectIndex].size, currentRotation);
         }
 
-        
+        #region 旋转
+        // 在PlacementState中添加旋转处理
+        public void UpdateRotation(Vector3Int gridPosition, int rotateAngle)
+        {
+            currentRotation += rotateAngle;
+            currentRotation %= 360;
+
+            previewSystem.UpdateRotate(rotateAngle, CheckPlacementValidity(gridPosition, selectedObjectIndex));
+        }
+        #endregion
+
         // 更新状态
         public void UpdateState(Vector3Int gridPosition)
         {
@@ -90,6 +105,5 @@ namespace GridPlacement
 
             previewSystem.UpdatePosition(grid.CellToWorld(gridPosition), placementValidity);
         }
-
     }
 }

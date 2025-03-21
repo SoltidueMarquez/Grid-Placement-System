@@ -38,6 +38,8 @@ namespace GridPlacement
             // 订阅事件
             inputManager.OnClicked += PlaceStructure;
             inputManager.OnExit += StopPlacement;
+            inputManager.OnRotateLeft += RotateStructureLeft;
+            inputManager.OnRotateRight += RotateStructureRight;
         }
 
         public void StartRemoving()
@@ -45,9 +47,36 @@ namespace GridPlacement
             StopPlacement();
             gridVisualization.SetActive(true) ;
             buildingState = new RemovingState(grid, preview, floorData, furnitureData, objectPlacer);
+            // 订阅事件
             inputManager.OnClicked += PlaceStructure;
             inputManager.OnExit += StopPlacement;
         }
+
+        #region 旋转
+        private void RotateStructureLeft()
+        {
+            Debug.Log("左转");
+            if (buildingState is PlacementState placementState)
+            {
+                var mousePosition = inputManager.GetSelectedMapPosition();// 获取鼠标位置
+                var gridPosition = grid.WorldToCell(mousePosition);// 计算单元格指示器的位置
+                var rotateAngle = -90;
+                placementState.UpdateRotation(gridPosition, rotateAngle);
+            }
+        }
+        private void RotateStructureRight()
+        {
+            Debug.Log("右转");
+            if (buildingState is PlacementState placementState)
+            {
+                var mousePosition = inputManager.GetSelectedMapPosition();// 获取鼠标位置
+                var gridPosition = grid.WorldToCell(mousePosition);// 计算单元格指示器的位置
+                var rotateAngle = 90;
+                placementState.UpdateRotation(gridPosition, rotateAngle);
+            }
+        }
+        #endregion
+        
         
         private void PlaceStructure()
         {
@@ -68,6 +97,8 @@ namespace GridPlacement
             buildingState.EndState();// 结束状态
             inputManager.OnClicked -= PlaceStructure;// 取消订阅事件
             inputManager.OnExit -= StopPlacement;
+            inputManager.OnRotateLeft -= RotateStructureLeft;
+            inputManager.OnRotateRight -= RotateStructureRight;
             lastDetectedPosition = Vector3Int.zero;
             buildingState = null;
         }

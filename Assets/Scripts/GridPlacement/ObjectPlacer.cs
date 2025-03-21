@@ -28,17 +28,16 @@ namespace GridPlacement
         }
 
         // 放置物体
-        public int PlaceObject(GameObject prefab, Vector3Int gridPosition)
+        public int PlaceObject(GameObject prefab, Vector3Int gridPosition, Quaternion rotation)
         {
-            var structure = Instantiate(prefab);
-            structure.transform.position = gridPosition;
+            var structure = Instantiate(prefab, gridPosition, rotation);
             // 添加字典项
             var id = GetUniqueID();
             placeGameObjectsDic.Add(id, structure);
             
             return id;
         }
-        
+
         // 移除物体
         internal void RemoveObjectAt(int gameObjectIndex)
         {
