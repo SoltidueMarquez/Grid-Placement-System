@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace GridPlacement
@@ -16,9 +17,9 @@ namespace GridPlacement
         /// <param name="objectSize">物体占用大小</param>
         /// <param name="placeOperationID"></param>
         /// <param name="placedObjectIndex">物体id</param>
-        public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int rotateAngle, int placedObjectIndex, int placeOperationID)
+        public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int rotateAngle, int placedObjectIndex, int placeOperationID, List<BoolListWrapper> irregularSize = null)
         {
-            var positionToOccupy = CalculatePositions(gridPosition, objectSize, rotateAngle);  //计算占用位置
+            var positionToOccupy = CalculatePositions(gridPosition, objectSize, rotateAngle, irregularSize);  //计算占用位置
             var data = new PlacementData(positionToOccupy, placeOperationID, placedObjectIndex); //构造放置数据
             foreach (var pos in positionToOccupy.Where(pos => placedObjects.ContainsKey(pos)))//冲突判断
             {
@@ -28,15 +29,30 @@ namespace GridPlacement
         }
         
         // 返回占用网格坐标的列表,出现了旋转的情况，返回的size可能会出现x，y小于0的情况，这个时候需要--遍历所有的点
-        private List<Vector3Int> CalculatePositions(Vector3Int gridPosition, Vector2Int objectSize, int rotateAngle)
+        private List<Vector3Int> CalculatePositions(Vector3Int gridPosition, Vector2Int objectSize, int rotateAngle, List<BoolListWrapper> irregularSize = null)
         {
             var positionToOccupy = new List<Vector3Int>();
-            
-            for (var x = 0; x < objectSize.x; x++)
+            if (irregularSize == null || irregularSize.Count == 0)// 规则网格占用计算
             {
-                for (var y = 0; y < objectSize.y; y++)
+                for (var x = 0; x < objectSize.x; x++)
                 {
-                    positionToOccupy.Add(gridPosition + new Vector3Int(x, 0, y));
+                    for (var y = 0; y < objectSize.y; y++)
+                    {
+                        positionToOccupy.Add(gridPosition + new Vector3Int(x, 0, y));
+                    }
+                }
+            }
+            else // 异形网格占用计算
+            {
+                for (var x = 0; x < irregularSize.Count; x++)
+                {
+                    for (var y = 0; y < irregularSize[x]?.count; y++)
+                    {
+                        if (irregularSize[x].values[y])
+                        {
+                            positionToOccupy.Add(gridPosition + new Vector3Int(x, 0, y));
+                        }
+                    }
                 }
             }
             // 计算实际占用的网格范围

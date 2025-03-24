@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using UnityEngine;
 
 namespace GridPlacement
 {
@@ -38,9 +40,19 @@ namespace GridPlacement
             selectedObjectIndex = database.objectsData.FindIndex(data => data.id == placeGameObjectIndex);
             if (selectedObjectIndex > -1)
             {
-                previewSystem.StartShowingPlacementPreview(
-                    database.objectsData[selectedObjectIndex].prefab,
-                    database.objectsData[selectedObjectIndex].size);
+                Vector2Int newSize;// 首先计算网格指示器的尺寸
+                var selectedObject = database.objectsData[selectedObjectIndex];
+                if (selectedObject.ifIrregularShape && selectedObject.irregularSize.Count > 0)
+                {
+                    // size.x 取 irregularSize 的行数
+                    var width = selectedObject.irregularSize.Count;
+                    // irregularSize的各个元素大小可能不相同，size.y 取所有行中 values.Count 的最大值
+                    var height = selectedObject.irregularSize.Max(row => row.values.Count);
+                    newSize = new Vector2Int(width, height);
+                }
+                else { newSize = selectedObject.size; }
+                
+                previewSystem.StartShowingPlacementPreview(selectedObject.prefab, newSize);
                 originalSize = database.objectsData[selectedObjectIndex].size;
             }
             else throw new System.Exception($"No object with ID {placeGameObjectIndex}");
@@ -70,11 +82,21 @@ namespace GridPlacement
             var index = objectPlacer.PlaceObject(database.objectsData[selectedObjectIndex].prefab, gridPosition, rotation);
             //更新对应的gridData
             var selectedData = database.objectsData[selectedObjectIndex].id == 0 ? floorData : furnitureData;
-            selectedData.AddObjectAt(gridPosition,
-                database.objectsData[selectedObjectIndex].size, currentRotation,
-                database.objectsData[selectedObjectIndex].id,
-                index);
-            
+            if (database.objectsData[selectedObjectIndex].ifIrregularShape)// 如果是异形家具就要传入异形尺寸描述
+            {
+                selectedData.AddObjectAt(gridPosition,
+                    database.objectsData[selectedObjectIndex].size, currentRotation,
+                    database.objectsData[selectedObjectIndex].id,
+                    index, 
+                    database.objectsData[selectedObjectIndex].irregularSize);
+            }
+            else
+            {
+                selectedData.AddObjectAt(gridPosition,
+                    database.objectsData[selectedObjectIndex].size, currentRotation,
+                    database.objectsData[selectedObjectIndex].id,
+                    index);
+            }
             // 更新预览表现
             previewSystem.UpdatePosition(grid.CellToWorld(gridPosition), false);
         }

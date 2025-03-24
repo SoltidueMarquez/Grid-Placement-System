@@ -15,16 +15,22 @@ MonoBehaviour:
   objectsData:
   - <objectName>k__BackingField: Floor
     <id>k__BackingField: 0
-    <size>k__BackingField: {x: 1, y: 1}
     <prefab>k__BackingField: {fileID: 7293268570120068221, guid: ed4e353c2b8240b4c8cdaaa35c896e6b,
       type: 3}
+    <ifIrregularShape>k__BackingField: 0
+    <size>k__BackingField: {x: 1, y: 1}
+    <irregularSize>k__BackingField: []
   - <objectName>k__BackingField: Chair
     <id>k__BackingField: 1
-    <size>k__BackingField: {x: 1, y: 1}
     <prefab>k__BackingField: {fileID: 900312650325647189, guid: b4cce38425c20644898ed18072e0d68e,
       type: 3}
+    <ifIrregularShape>k__BackingField: 0
+    <size>k__BackingField: {x: 1, y: 1}
+    <irregularSize>k__BackingField: []
   - <objectName>k__BackingField: Desk
     <id>k__BackingField: 2
-    <size>k__BackingField: {x: 2, y: 1}
     <prefab>k__BackingField: {fileID: 6371071143295034402, guid: 711633411b602c843bfb4a4559ea4e30,
       type: 3}
+    <ifIrregularShape>k__BackingField: 0
+    <size>k__BackingField: {x: 2, y: 1}
+    <irregularSize>k__BackingField: []
