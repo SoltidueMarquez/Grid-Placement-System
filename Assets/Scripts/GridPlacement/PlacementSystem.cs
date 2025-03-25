@@ -31,8 +31,10 @@ namespace GridPlacement
 
             // 存档恢复
             if (SaveManager.Instance.data.placeGameObjectsDic.Count == 0) return;
-            foreach (var structure in SaveManager.Instance.data.placeGameObjectsDic.Select(operate =>
-                         Instantiate(operate.Value.structure, operate.Value.gridPosition, operate.Value.rotation))) ;
+            foreach (var operate in SaveManager.Instance.data.placeGameObjectsDic){
+                var structure = Instantiate(operate.Value.prefab, operate.Value.gridPosition, operate.Value.rotation);
+                operate.Value.structure = structure;
+            }
         }
 
         public void StartPlacement(int id)

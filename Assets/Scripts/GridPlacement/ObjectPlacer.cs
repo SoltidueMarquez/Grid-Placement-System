@@ -7,14 +7,12 @@ namespace GridPlacement
     public class ObjectPlacer : Singleton<ObjectPlacer>
     {
         private HashSet<int> availableIDs; // 存储回收的ID
-        private int nextID = 0; // 递增的唯一ID
         private Dictionary<int, PlaceInfo> placeGameObjectsDic;// 用字典存放场景的物体
 
         private void Start()
         {
             availableIDs = SaveManager.Instance.data.availableIDs;
             placeGameObjectsDic = SaveManager.Instance.data.placeGameObjectsDic;
-            nextID = (availableIDs?.Count > 0) ? availableIDs.OrderBy(x => x).Last() + 1 : 0; // 获取最新的nextID
         }
 
         /// <summary>
@@ -30,7 +28,7 @@ namespace GridPlacement
             }
             else
             {
-                return nextID++; // 生成新的ID
+                return SaveManager.Instance.data.nextID++; // 生成新的ID
             }
         }
 
@@ -40,7 +38,7 @@ namespace GridPlacement
             var structure = Instantiate(prefab, gridPosition, rotation);
             // 添加字典项
             var id = GetUniqueID();
-            placeGameObjectsDic.Add(id, new PlaceInfo(structure, gridPosition, rotation));
+            placeGameObjectsDic.Add(id, new PlaceInfo(structure, prefab, gridPosition, rotation));
             
             return id;
         }

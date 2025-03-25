@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
+using Sirenix.Serialization;
 using UnityEngine;
 
 namespace GridPlacement
 {
-    [Serializable]
     public class GridData
     {
-        private Dictionary<Vector3Int, PlacementData> placedObjects = new Dictionary<Vector3Int, PlacementData>();
+        [OdinSerialize] private Dictionary<Vector3Int, PlacementData> placedObjects = new Dictionary<Vector3Int, PlacementData>();
 
         /// <summary>
         /// 在对应位置上添加物体
@@ -117,12 +116,12 @@ namespace GridPlacement
             }
         }
     }
-
+    
     public class PlacementData
     {
         public List<Vector3Int> occupiedPositions;  // 此物体占用的位置
-        public int operationID { get; private set; }         // 用于移除操作
-        public int placedObjectIndex { get; private set; }
+        [field: SerializeField] public int operationID { get; private set; }         // 用于移除操作
+        [field: SerializeField] public int placedObjectIndex { get; private set; }
         
         public PlacementData(List<Vector3Int> occupiedPositions, int operationID, int placedObjectIndex)
         {
