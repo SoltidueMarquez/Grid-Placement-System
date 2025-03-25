@@ -6,9 +6,10 @@ using UnityEngine;
 
 namespace GridPlacement
 {
+    [Serializable]
     public class GridData
     {
-        Dictionary<Vector3Int, PlacementData> placedObjects = new Dictionary<Vector3Int, PlacementData>();
+        private Dictionary<Vector3Int, PlacementData> placedObjects = new Dictionary<Vector3Int, PlacementData>();
 
         /// <summary>
         /// 在对应位置上添加物体

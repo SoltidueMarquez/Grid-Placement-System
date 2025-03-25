@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace GridPlacement
 {
@@ -25,8 +26,13 @@ namespace GridPlacement
             objectPlacer = ObjectPlacer.Instance;
             
             gridVisualization.SetActive(false);
-            floorData = new GridData();
-            furnitureData = new GridData();
+            floorData = SaveManager.Instance.data.floorData;
+            furnitureData = SaveManager.Instance.data.furnitureData;
+
+            // 存档恢复
+            if (SaveManager.Instance.data.placeGameObjectsDic.Count == 0) return;
+            foreach (var structure in SaveManager.Instance.data.placeGameObjectsDic.Select(operate =>
+                         Instantiate(operate.Value.structure, operate.Value.gridPosition, operate.Value.rotation))) ;
         }
 
         public void StartPlacement(int id)
